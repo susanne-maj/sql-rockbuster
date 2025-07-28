@@ -1,0 +1,42 @@
+# Find top 10 countries with the most customers (TopCountries). Then top 10 cities from the table with top 10 countries (TopCities). Finally, Top 5 customers based on top 10 cities. The top 5 customers are 
+# calculated based on payments. 
+WITH TopCountries AS (
+    -- Step 1: Identify the top 10 countries with the most customers
+    SELECT D.country
+    FROM customer A
+    INNER JOIN address B ON A.address_id = B.address_id
+    INNER JOIN city C ON B.city_id = C.city_id
+    INNER JOIN country D ON C.country_id = D.country_id
+    GROUP BY D.country
+    ORDER BY COUNT(A.customer_id) DESC
+    LIMIT 10
+),
+TopCities AS (
+    -- Step 2: Identify the top 10 cities within the top 10 countries
+    SELECT C.city
+    FROM customer A
+    INNER JOIN address B ON A.address_id = B.address_id
+    INNER JOIN city C ON B.city_id = C.city_id
+    INNER JOIN country D ON C.country_id = D.country_id
+    WHERE D.country IN (SELECT country FROM TopCountries)
+    GROUP BY D.country, C.city
+    ORDER BY COUNT(A.customer_id) DESC
+    LIMIT 10
+),
+CustomerPayments AS (
+    -- Step 3: Calculate the total amount paid by each customer in the top cities
+    SELECT A.customer_id, 
+           SUM(E.amount) AS total_amount_paid
+    FROM customer A
+    INNER JOIN address B ON A.address_id = B.address_id
+    INNER JOIN city C ON B.city_id = C.city_id
+    INNER JOIN country D ON C.country_id = D.country_id
+    INNER JOIN payment E ON A.customer_id = E.customer_id
+    WHERE C.city IN (SELECT city FROM TopCities)
+    GROUP BY A.customer_id
+    ORDER BY total_amount_paid DESC
+    LIMIT 5
+)
+-- Step 4: Calculate the average total amount paid
+SELECT AVG(total_amount_paid) AS average
+FROM CustomerPayments;

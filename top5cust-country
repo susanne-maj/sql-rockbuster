@@ -1,0 +1,59 @@
+# How many of the top 5 customers are based in every country. 
+WITH TopCountries AS (
+    -- Identify the top 10 countries with the highest customer count
+    SELECT D.country
+    FROM customer A
+    INNER JOIN address B ON A.address_id = B.address_id
+    INNER JOIN city C ON B.city_id = C.city_id
+    INNER JOIN country D ON C.country_id = D.country_id
+    GROUP BY D.country
+    ORDER BY COUNT(A.customer_id) DESC
+    LIMIT 10
+),
+TopCities AS (
+    -- Identify the top 10 cities within the top 10 countries with the highest customer count
+    SELECT C.city, D.country
+    FROM customer A
+    INNER JOIN address B ON A.address_id = B.address_id
+    INNER JOIN city C ON B.city_id = C.city_id
+    INNER JOIN country D ON C.country_id = D.country_id
+    WHERE D.country IN (SELECT country FROM TopCountries)
+    GROUP BY D.country, C.city
+    ORDER BY COUNT(A.customer_id) DESC
+    LIMIT 10
+),
+TopCustomers AS (
+    -- Identify the top 5 customers based on total payments in the top cities
+    SELECT A.customer_id, 
+           C.city, 
+           D.country, 
+           SUM(E.amount) AS total_amount_paid
+    FROM customer A
+    INNER JOIN address B ON A.address_id = B.address_id
+    INNER JOIN city C ON B.city_id = C.city_id
+    INNER JOIN country D ON C.country_id = D.country_id
+    INNER JOIN payment E ON A.customer_id = E.customer_id
+    WHERE C.city IN (SELECT city FROM TopCities)
+    GROUP BY A.customer_id, C.city, D.country
+    ORDER BY total_amount_paid DESC
+    LIMIT 5
+),
+CountryCustomerCounts AS (
+    -- Count all customers and top customers per country
+    SELECT D.country,
+           COUNT(A.customer_id) AS all_customer_count,
+           COUNT(TC.customer_id) AS top_customers_count
+    FROM customer A
+    INNER JOIN address B ON A.address_id = B.address_id
+    INNER JOIN city C ON B.city_id = C.city_id
+    INNER JOIN country D ON C.country_id = D.country_id
+    LEFT JOIN TopCustomers TC ON A.customer_id = TC.customer_id
+    GROUP BY D.country
+)
+-- Final query: Fetch the top 5 countries by top customer count
+SELECT country, 
+       all_customer_count, 
+       top_customers_count
+FROM CountryCustomerCounts
+ORDER BY top_customers_count DESC
+LIMIT 5;

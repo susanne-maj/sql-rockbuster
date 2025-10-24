@@ -2,7 +2,6 @@
 Rockbuster Stealth movie rentals
 ## Overview
 Rockbuster Stealth LLC is a movie rental company that used to have stores around the world. Facing stiff competition from streaming services such as Netflix and Amazon Prime, the Rockbuster Stealth management team is planning to launch an online video rental service in order to stay competitive. The data analysis will serve for defining a strategy of the launch of the online service.
-<img width="4902" height="66" alt="image" src="https://github.com/user-attachments/assets/dd9ce350-fbf5-40f3-860a-e54cd3d5d942" />
 ## Objective 
 To analyze data and provide recommendations for Rockbusters future investment in online sales. The aim is to investigate which movies contribute most and least to revenue gain, what the average rental duration is, which countries the customers are based in respectively where the high-value customers are based, and investigate if sales figures vary between regions.
 ## Data

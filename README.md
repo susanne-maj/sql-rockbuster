@@ -10,5 +10,6 @@ Rockbuster data set with information about Rockbuster’s film inventory, custom
 Postgre SQL database
 ## Results
 A lot of movies contribute to the sales, but there are ”high performers”. The mean rental duration is five days. Sales differ between regions, with the biggest customer base in Asia. 
+[View the presentation](https://github.com/susanne-maj/sql-rockbuster/blob/main/Rockbuster%20Stealth%20Presentation%203-10-Rev1.pdf)
 
 
